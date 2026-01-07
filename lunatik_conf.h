@@ -61,8 +61,11 @@ static inline void *lsys_load(lua_State *L, const char *symbol, int seeglb)
 int lunatik_loadfile(lua_State *L, const char *filename, const char *mode);
 #define luaL_loadfilex(L,f,m)	lunatik_loadfile((L),(f),(m))
 
+#define STR(x) #x
+#define XSTR(x) STR(x)
+
 #undef LUA_ROOT
-#define LUA_ROOT	"/lib/modules/lua/"
+#define LUA_ROOT   XSTR(LUNATIK_ROOT)
 
 #undef LUA_PATH_DEFAULT
 #define LUA_PATH_DEFAULT  LUA_ROOT"?.lua;" LUA_ROOT"?/init.lua"
