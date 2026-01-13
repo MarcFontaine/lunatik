@@ -3,6 +3,7 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs?ref=25.11";
+    self.submodules = true;
   };
 
   outputs = { self, nixpkgs }:
@@ -11,6 +12,7 @@
     in
     {    
     packages.x86_64-linux.lunatik = pkgs.callPackage ./nix/lunatik-modules.nix {
+      inherit self;
       kernelPackages = pkgs.linuxPackages_6_12;
     };
 

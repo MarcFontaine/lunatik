@@ -1,4 +1,5 @@
-{ lib
+{ self
+, lib
 , fetchFromGitHub
 , stdenv
 , kernelPackages
@@ -7,23 +8,16 @@
 let
   kernel = kernelPackages.kernel;
 in
-stdenv.mkDerivation rec {
+stdenv.mkDerivation (finalAttrs: {
   pname = "lunatik-linux-module";
   version = "nix-unstable";
 
-#  src = fetchFromGitHub {
-#    owner = "MarcFontaine";
-#    repo = "lunatik";
-#    rev = "32409b2c848306e9c606b08c790b8109336d544b";
-#    hash = "sha256-8roDITTTK8rqvjCN0wc/xJw28FY55UZhapDGs93NFFs=";
-#    fetchSubmodules = true;
-#    name = "lunatik";
-#  };
+  src = self;
 
-  src = builtins.path {
-    path = /v/lunatik;
-    name = "lunatik";
-  };
+#  src = builtins.fetchGit {
+#    url = ./.;
+#    submodules = true;
+#  };
 
   nativeBuildInputs = kernel.moduleBuildDependencies;
 
@@ -31,15 +25,15 @@ stdenv.mkDerivation rec {
     kernel-version = kernel.version;
   };
 
-  setSourceRoot = ''
-    export sourceRoot=$(pwd)/lunatik
-  '';
+#  setSourceRoot = ''
+#    export sourceRoot=$(pwd)/source
+#  '';
 
   patchPhase = "patchShebangs gensymbols.sh bin/lunatik";
 
   makeFlags = kernelPackages.kernelModuleMakeFlags ++ [
     "MODULES_BUILD_PATH=${kernel.dev}/lib/modules/${kernel.modDirVersion}/build"
-    "PWD=/build/lunatik" # todo: fix
+    "PWD=/build/source" # todo: fix
     "INSTALL=install"
     "MODULES_INSTALL_PATH=${placeholder "out"}/lib/modules/${kernel.modDirVersion}/kernel"
     "SCRIPTS_INSTALL_PATH=${placeholder "out"}/lib/modules/${kernel.modDirVersion}/lua"
@@ -59,4 +53,4 @@ stdenv.mkDerivation rec {
     description = "Lua in kernel";
     platforms = platforms.linux;
   };
-}
+})
